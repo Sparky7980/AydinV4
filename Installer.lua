@@ -1,13 +1,29 @@
--- This script can be uploaded to GitHub and loaded using a loadstring URL
+-- Main Script for AydinV4 GUI
 
-local function createVapeStyleGUI()
+local function loadModules()
+    local modules = {}
+
+    -- Load modules from the Modules folder
+    local moduleFolder = script:FindFirstChild("Modules")
+    if moduleFolder then
+        for _, module in pairs(moduleFolder:GetChildren()) do
+            if module:IsA("ModuleScript") then
+                modules[module.Name] = require(module)
+            end
+        end
+    end
+
+    return modules
+end
+
+local function createAydinV4StyleGUI(modules)
     local player = game.Players.LocalPlayer
     local playerGui = player:WaitForChild("PlayerGui")
 
     -- Main screen GUI
-    local vapeGUI = Instance.new("ScreenGui")
-    vapeGUI.Name = "VapeStyleGUI"
-    vapeGUI.Parent = playerGui
+    local aydinGUI = Instance.new("ScreenGui")
+    aydinGUI.Name = "AydinV4StyleGUI"
+    aydinGUI.Parent = playerGui
 
     -- Frame for menu
     local mainFrame = Instance.new("Frame")
@@ -17,7 +33,7 @@ local function createVapeStyleGUI()
     mainFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
     mainFrame.BorderSizePixel = 0
     mainFrame.Visible = false -- Start hidden
-    mainFrame.Parent = vapeGUI
+    mainFrame.Parent = aydinGUI
 
     -- Top bar
     local topBar = Instance.new("Frame")
@@ -29,7 +45,7 @@ local function createVapeStyleGUI()
 
     local title = Instance.new("TextLabel")
     title.Name = "Title"
-    title.Text = "Vape V4 Style GUI"
+    title.Text = "Aydin V4 Style GUI"
     title.Font = Enum.Font.GothamBold
     title.TextSize = 18
     title.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -47,7 +63,7 @@ local function createVapeStyleGUI()
     toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
     toggleButton.Font = Enum.Font.GothamBold
     toggleButton.TextSize = 14
-    toggleButton.Parent = vapeGUI
+    toggleButton.Parent = aydinGUI
 
     -- Add close button inside MainFrame
     local closeButton = Instance.new("TextButton")
@@ -60,6 +76,27 @@ local function createVapeStyleGUI()
     closeButton.Font = Enum.Font.GothamBold
     closeButton.TextSize = 14
     closeButton.Parent = mainFrame
+
+    -- Buttons for modules
+    local yPos = 0.2
+    for moduleName, module in pairs(modules) do
+        local button = Instance.new("TextButton")
+        button.Name = moduleName .. "Button"
+        button.Text = moduleName
+        button.Size = UDim2.new(0.8, 0, 0.1, 0)
+        button.Position = UDim2.new(0.1, 0, yPos, 0)
+        button.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+        button.TextColor3 = Color3.fromRGB(255, 255, 255)
+        button.Font = Enum.Font.GothamBold
+        button.TextSize = 14
+        button.Parent = mainFrame
+
+        yPos = yPos + 0.15
+
+        button.MouseButton1Click:Connect(function()
+            module.Activate()
+        end)
+    end
 
     -- Open/Close Functionality
     local isOpen = false
@@ -78,9 +115,5 @@ local function createVapeStyleGUI()
 end
 
 -- Load GUI upon execution
-createVapeStyleGUI()
-
--- Loadstring setup example:
--- Upload this script to GitHub Gist or a similar service, and retrieve the raw URL
--- Use this loadstring in your game to load the GUI:
--- loadstring(game:HttpGet("YOUR_RAW_GITHUB_URL_HERE"))()
+local modules = loadModules()
+createAydinV4StyleGUI(modules)
