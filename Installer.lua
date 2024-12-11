@@ -6,6 +6,7 @@ local function loadModules()
 
     local moduleNames = {
         "TeleportModule",
+        "SpeedBoostModule",
         -- Add more module names here
     }
 
