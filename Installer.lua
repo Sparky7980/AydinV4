@@ -1,31 +1,39 @@
--- Main Script for AydinV4 GUI
+-- Main Installer Script for AydinV4 GUI and Modules
 
 local function loadModules()
     local modules = {}
-    local baseURL = "https://raw.githubusercontent.com/Sparky7980/AydinV4/main/modules/"
 
-    local moduleNames = {
-        "TeleportModule",
-        "SpeedBoostModule", -- Add other module names here
-    }
-
-    for _, moduleName in pairs(moduleNames) do
-        local url = baseURL .. moduleName .. ".lua"
-        print("Attempting to fetch module from:", url) -- Debug log
-        local success, result = pcall(function()
-            return loadstring(game:HttpGet(url))()
-        end)
-        if success then
-            modules[moduleName] = result
-            print("Successfully loaded module:", moduleName)
-        else
-            warn("Failed to load module:", moduleName, result)
+    -- SpeedBoostModule
+    local SpeedBoostModule = {}
+    function SpeedBoostModule.Activate()
+        local player = game.Players.LocalPlayer
+        if player and player.Character and player.Character:FindFirstChild("Humanoid") then
+            local humanoid = player.Character.Humanoid
+            humanoid.WalkSpeed = 50 -- Example boosted speed
+            print("Speed Boost Activated")
         end
     end
+    modules["SpeedBoostModule"] = SpeedBoostModule
+
+    -- TeleportModule
+    local TeleportModule = {}
+    function TeleportModule.Activate()
+        local player = game.Players.LocalPlayer
+        if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            local rootPart = player.Character.HumanoidRootPart
+            local forwardDirection = rootPart.CFrame.LookVector
+            local teleportDistance = 5
+            local newPosition = rootPart.Position + forwardDirection * teleportDistance
+            rootPart.CFrame = CFrame.new(newPosition)
+            print("Teleported 5 blocks forward")
+        else
+            print("Teleport failed: Character or HumanoidRootPart not found")
+        end
+    end
+    modules["TeleportModule"] = TeleportModule
 
     return modules
 end
-
 
 local function createAydinV4StyleGUI(modules)
     local player = game.Players.LocalPlayer
@@ -46,85 +54,35 @@ local function createAydinV4StyleGUI(modules)
     mainFrame.Visible = false -- Start hidden
     mainFrame.Parent = aydinGUI
 
-    -- Top bar
-    local topBar = Instance.new("Frame")
-    topBar.Name = "TopBar"
-    topBar.Size = UDim2.new(1, 0, 0.1, 0)
-    topBar.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    topBar.BorderSizePixel = 0
-    topBar.Parent = mainFrame
-
-    local title = Instance.new("TextLabel")
-    title.Name = "Title"
-    title.Text = "Aydin V4 Style GUI"
-    title.Font = Enum.Font.GothamBold
-    title.TextSize = 18
-    title.TextColor3 = Color3.fromRGB(255, 255, 255)
-    title.BackgroundTransparency = 1
-    title.Size = UDim2.new(1, 0, 1, 0)
-    title.Parent = topBar
-
-    -- Toggle Button
-    local toggleButton = Instance.new("TextButton")
-    toggleButton.Name = "ToggleButton"
-    toggleButton.Text = "Open"
-    toggleButton.Size = UDim2.new(0.1, 0, 0.05, 0)
-    toggleButton.Position = UDim2.new(0.9, 0, 0.05, 0)
-    toggleButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-    toggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    toggleButton.Font = Enum.Font.GothamBold
-    toggleButton.TextSize = 14
-    toggleButton.Parent = aydinGUI
-
-    -- Add close button inside MainFrame
-    local closeButton = Instance.new("TextButton")
-    closeButton.Name = "CloseButton"
-    closeButton.Text = "X"
-    closeButton.Size = UDim2.new(0.1, 0, 0.1, 0)
-    closeButton.Position = UDim2.new(0.9, 0, 0, 0)
-    closeButton.BackgroundColor3 = Color3.fromRGB(255, 80, 80)
-    closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    closeButton.Font = Enum.Font.GothamBold
-    closeButton.TextSize = 14
-    closeButton.Parent = mainFrame
-
-    -- Buttons for modules
-    local yPos = 0.2
-    for moduleName, module in pairs(modules) do
-        local button = Instance.new("TextButton")
-        button.Name = moduleName .. "Button"
-        button.Text = moduleName
-        button.Size = UDim2.new(0.8, 0, 0.1, 0)
-        button.Position = UDim2.new(0.1, 0, yPos, 0)
-        button.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
-        button.TextColor3 = Color3.fromRGB(255, 255, 255)
-        button.Font = Enum.Font.GothamBold
-        button.TextSize = 14
-        button.Parent = mainFrame
-
-        yPos = yPos + 0.15
-
-        button.MouseButton1Click:Connect(function()
-            module.Activate()
-        end)
-    end
-
-    -- Open/Close Functionality
-    local isOpen = false
-
-    toggleButton.MouseButton1Click:Connect(function()
-        isOpen = not isOpen
-        mainFrame.Visible = isOpen
-        toggleButton.Text = isOpen and "Close" or "Open"
+    -- Button for opening the menu
+    local openButton = Instance.new("TextButton")
+    openButton.Size = UDim2.new(0, 100, 0, 50)
+    openButton.Position = UDim2.new(0.5, -50, 0, 20)
+    openButton.Text = "Open Menu"
+    openButton.Parent = mainFrame
+    openButton.MouseButton1Click:Connect(function()
+        mainFrame.Visible = not mainFrame.Visible
     end)
 
-    closeButton.MouseButton1Click:Connect(function()
-        isOpen = false
-        mainFrame.Visible = false
-        toggleButton.Text = "Open"
+    -- Buttons for each module (SpeedBoost and Teleport)
+    local speedBoostButton = Instance.new("TextButton")
+    speedBoostButton.Size = UDim2.new(0, 100, 0, 50)
+    speedBoostButton.Position = UDim2.new(0.5, -50, 0, 80)
+    speedBoostButton.Text = "Speed Boost"
+    speedBoostButton.Parent = mainFrame
+    speedBoostButton.MouseButton1Click:Connect(function()
+        modules["SpeedBoostModule"].Activate()
+    end)
+
+    local teleportButton = Instance.new("TextButton")
+    teleportButton.Size = UDim2.new(0, 100, 0, 50)
+    teleportButton.Position = UDim2.new(0.5, -50, 0, 140)
+    teleportButton.Text = "Teleport"
+    teleportButton.Parent = mainFrame
+    teleportButton.MouseButton1Click:Connect(function()
+        modules["TeleportModule"].Activate()
     end)
 end
 
--- Load GUI upon execution
 local modules = loadModules()
 createAydinV4StyleGUI(modules)
