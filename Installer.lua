@@ -2,7 +2,7 @@
 
 local function loadModules()
     local modules = {}
-    local baseURL = "https://raw.githubusercontent.com/Sparky7980/AydinV4/main/module/"
+    local baseURL = "https://raw.githubusercontent.com/Sparky7980/AydinV4/main/modules/"
 
     local moduleNames = {
         "TeleportModule",
