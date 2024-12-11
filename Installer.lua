@@ -1,5 +1,6 @@
 -- Main Installer Script for AydinV4 GUI and Modules
 
+-- Load the modules
 local function loadModules()
     local modules = {}
 
@@ -11,6 +12,8 @@ local function loadModules()
             local humanoid = player.Character.Humanoid
             humanoid.WalkSpeed = 50 -- Example boosted speed
             print("Speed Boost Activated")
+        else
+            print("Speed Boost failed: Character or Humanoid not found")
         end
     end
     modules["SpeedBoostModule"] = SpeedBoostModule
@@ -35,16 +38,17 @@ local function loadModules()
     return modules
 end
 
+-- Create the GUI and set up buttons
 local function createAydinV4StyleGUI(modules)
     local player = game.Players.LocalPlayer
     local playerGui = player:WaitForChild("PlayerGui")
 
-    -- Main screen GUI
+    -- Create ScreenGui
     local aydinGUI = Instance.new("ScreenGui")
     aydinGUI.Name = "AydinV4StyleGUI"
     aydinGUI.Parent = playerGui
 
-    -- Frame for menu
+    -- Main Frame for the menu
     local mainFrame = Instance.new("Frame")
     mainFrame.Name = "MainFrame"
     mainFrame.Size = UDim2.new(0.3, 0, 0.4, 0)
@@ -54,7 +58,7 @@ local function createAydinV4StyleGUI(modules)
     mainFrame.Visible = false -- Start hidden
     mainFrame.Parent = aydinGUI
 
-    -- Button for opening the menu
+    -- Button to open/close the menu
     local openButton = Instance.new("TextButton")
     openButton.Size = UDim2.new(0, 100, 0, 50)
     openButton.Position = UDim2.new(0.5, -50, 0, 20)
@@ -62,27 +66,32 @@ local function createAydinV4StyleGUI(modules)
     openButton.Parent = mainFrame
     openButton.MouseButton1Click:Connect(function()
         mainFrame.Visible = not mainFrame.Visible
+        print("Menu toggled")  -- Debugging line
     end)
 
-    -- Buttons for each module (SpeedBoost and Teleport)
+    -- Button for SpeedBoost
     local speedBoostButton = Instance.new("TextButton")
     speedBoostButton.Size = UDim2.new(0, 100, 0, 50)
     speedBoostButton.Position = UDim2.new(0.5, -50, 0, 80)
     speedBoostButton.Text = "Speed Boost"
     speedBoostButton.Parent = mainFrame
     speedBoostButton.MouseButton1Click:Connect(function()
+        print("Speed Boost Button clicked")  -- Debugging line
         modules["SpeedBoostModule"].Activate()
     end)
 
+    -- Button for Teleport
     local teleportButton = Instance.new("TextButton")
     teleportButton.Size = UDim2.new(0, 100, 0, 50)
     teleportButton.Position = UDim2.new(0.5, -50, 0, 140)
     teleportButton.Text = "Teleport"
     teleportButton.Parent = mainFrame
     teleportButton.MouseButton1Click:Connect(function()
+        print("Teleport Button clicked")  -- Debugging line
         modules["TeleportModule"].Activate()
     end)
 end
 
+-- Load modules and create GUI
 local modules = loadModules()
 createAydinV4StyleGUI(modules)
