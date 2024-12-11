@@ -2,19 +2,28 @@
 
 local function loadModules()
     local modules = {}
+    local baseURL = "https://raw.githubusercontent.com/Sparky7980/AydinV4/main/module/"
 
-    -- Load modules from the Modules folder
-    local moduleFolder = script:FindFirstChild("Modules")
-    if moduleFolder then
-        for _, module in pairs(moduleFolder:GetChildren()) do
-            if module:IsA("ModuleScript") then
-                modules[module.Name] = require(module)
-            end
+    local moduleNames = {
+        "TeleportModule",
+        -- Add more module names here
+    }
+
+    for _, moduleName in pairs(moduleNames) do
+        local url = baseURL .. moduleName .. ".lua"
+        local success, result = pcall(function()
+            return loadstring(game:HttpGet(url))()
+        end)
+        if success then
+            modules[moduleName] = result
+        else
+            warn("Failed to load module:", moduleName, result)
         end
     end
 
     return modules
 end
+
 
 local function createAydinV4StyleGUI(modules)
     local player = game.Players.LocalPlayer
