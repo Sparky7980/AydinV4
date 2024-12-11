@@ -6,17 +6,18 @@ local function loadModules()
 
     local moduleNames = {
         "TeleportModule",
-        "SpeedBoostModule",
-        -- Add more module names here
+        "SpeedBoostModule", -- Add other module names here
     }
 
     for _, moduleName in pairs(moduleNames) do
         local url = baseURL .. moduleName .. ".lua"
+        print("Attempting to fetch module from:", url) -- Debug log
         local success, result = pcall(function()
             return loadstring(game:HttpGet(url))()
         end)
         if success then
             modules[moduleName] = result
+            print("Successfully loaded module:", moduleName)
         else
             warn("Failed to load module:", moduleName, result)
         end
