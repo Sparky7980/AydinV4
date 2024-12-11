@@ -2,10 +2,15 @@ local TeleportModule = {}
 
 function TeleportModule.Activate()
     local player = game.Players.LocalPlayer
-    if player and player.Character then
-        local character = player.Character
-        character:MoveTo(Vector3.new(0, 10, 0)) -- Example teleport location
-        print("Teleported to (0, 10, 0)")
+    if player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        local rootPart = player.Character.HumanoidRootPart
+        local forwardDirection = rootPart.CFrame.LookVector
+        local teleportDistance = 5
+        local newPosition = rootPart.Position + forwardDirection * teleportDistance
+        rootPart.CFrame = CFrame.new(newPosition)
+        print("Teleported 5 blocks forward")
+    else
+        print("Teleport failed: Character or HumanoidRootPart not found")
     end
 end
 
